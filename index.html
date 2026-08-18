@@ -54,6 +54,44 @@
 
   .cta-row { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
 
+  /* ── Installations-Box ── */
+  .install-box {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 24px; margin-bottom: 16px;
+  }
+  .install-label {
+    font-size: 0.82rem; font-weight: 600; color: var(--accent);
+    margin-bottom: 10px;
+  }
+  .cmd-row { display: flex; gap: 10px; align-items: stretch; }
+  .cmd-row code {
+    flex: 1; min-width: 0;
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 8px; padding: 13px 15px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.82rem; color: var(--text);
+    overflow-x: auto; white-space: nowrap;
+    display: flex; align-items: center;
+  }
+  .copy-btn {
+    flex-shrink: 0; font-family: inherit;
+    font-size: 0.92rem; font-weight: 600;
+    background: var(--accent); color: #101010;
+    border: none; padding: 0 22px; border-radius: 8px; cursor: pointer;
+    transition: opacity 0.12s;
+  }
+  .copy-btn:hover { opacity: 0.85; }
+  .copy-btn.ok { background: #47ff8a; }
+
+  .install-hint { font-size: 0.96rem; color: var(--muted); }
+  .install-hint kbd { font-size: 0.84rem; }
+
+  @media (max-width: 560px) {
+    .cmd-row { flex-direction: column; }
+    .cmd-row code { font-size: 0.72rem; }
+    .copy-btn { padding: 13px; }
+  }
+
   .btn {
     font-family: inherit; font-size: 1rem; font-weight: 600;
     background: var(--accent); color: #101010;
@@ -151,10 +189,19 @@
       Taste drücken – Bild gespeichert. Du bestimmst selbst, in
       welchem Ordner die Bilder landen.
     </p>
-    <div class="cta-row">
-      <a class="btn" href="PicGrabber.zip" download>Herunterladen</a>
-      <span class="meta">für Mac · 20 KB · kostenlos</span>
+    <div class="install-box">
+      <div class="install-label">1. Diesen Befehl kopieren</div>
+      <div class="cmd-row">
+        <code id="cmd">curl -fsSL https://klassenmedia.github.io/picgrabber-download/install.sh | bash</code>
+        <button class="copy-btn" id="copy" onclick="kopieren()">Kopieren</button>
+      </div>
+      <div class="install-label" style="margin-top:18px">2. Terminal öffnen und einfügen</div>
+      <p class="install-hint">
+        Terminal findest du mit <kbd>⌘</kbd> + <kbd>Leertaste</kbd>, dann „Terminal" tippen.
+        Befehl einfügen, <kbd>Enter</kbd> drücken – fertig. Der Browser öffnet sich von selbst.
+      </p>
     </div>
+    <p class="meta">für Mac · kostenlos · installiert sich selbst</p>
   </div>
 </header>
 
@@ -165,8 +212,8 @@
     <div class="step">
       <div class="step-nr">1</div>
       <div>
-        <h3>Herunterladen und öffnen</h3>
-        <p>Datei entpacken, dann <strong>Rechtsklick</strong> auf „START HIER" und <strong>„Öffnen"</strong> wählen – beim ersten Mal warnt der Mac einmalig, das ist normal. Danach reicht immer der Doppelklick.</p>
+        <h3>Befehl ins Terminal</h3>
+        <p>Den Befehl oben kopieren, Terminal öffnen, einfügen, <kbd>Enter</kbd>. Alles Weitere passiert von selbst – beim ersten Mal fragt der Mac einmal nach deinem Passwort.</p>
       </div>
     </div>
 
@@ -246,19 +293,18 @@
   <div class="wrap">
     <h2>Falls etwas hakt</h2>
     <div class="note">
-      <strong>„Datei kann nicht geöffnet werden"</strong> – das sagt der Mac bei
-      allem, was aus dem Internet kommt. Einmal mit Rechtsklick auf die Datei,
-      dann „Öffnen" wählen und im Fenster nochmal auf „Öffnen". Danach reicht
-      der normale Doppelklick.
+      <strong>Warum Terminal und nicht Doppelklick?</strong> Aktuelles macOS
+      blockiert heruntergeladene Programme von Entwicklern ohne Apple-Konto –
+      ohne brauchbaren Ausweg. Über das Terminal entfällt diese Sperre, deshalb
+      ist es hier der einfachere Weg.
     </div>
     <div class="note">
       <strong>Das schwarze Fenster</strong> gehört dazu und darf nicht zugemacht
       werden, solange du arbeitest. Zum Beenden einfach schließen.
     </div>
     <div class="note">
-      <strong>Beim ersten Start</strong> richtet sich das Programm einmalig selbst
-      ein und fragt dabei nach deinem Mac-Passwort. Das dauert zwei Minuten,
-      danach startet es sofort.
+      <strong>Beim nächsten Mal</strong> liegt das Programm in deinem Benutzerordner
+      unter „PicGrabber". Dann genügt ein Doppelklick auf <strong>START HIER</strong>.
     </div>
   </div>
 </section>
@@ -266,8 +312,11 @@
 <div class="dl">
   <div class="wrap">
     <h2>Loslegen</h2>
-    <p>Herunterladen, entpacken, doppelklicken.</p>
-    <a class="btn" href="PicGrabber.zip" download>Herunterladen</a>
+    <p>Befehl kopieren, ins Terminal einfügen, Enter.</p>
+    <div class="cmd-row" style="max-width:620px;margin:0 auto">
+      <code id="cmd2">curl -fsSL https://klassenmedia.github.io/picgrabber-download/install.sh | bash</code>
+      <button class="copy-btn" id="copy2" onclick="kopieren(2)">Kopieren</button>
+    </div>
   </div>
 </div>
 
@@ -276,6 +325,32 @@
     Ein Werkzeug von <a href="https://klassen-media.de">KlassenMedia</a>
   </div>
 </footer>
+
+<script>
+async function kopieren(nr) {
+  const cmd = document.getElementById(nr === 2 ? "cmd2" : "cmd").textContent.trim();
+  const btn = document.getElementById(nr === 2 ? "copy2" : "copy");
+  const alt = btn.textContent;
+
+  try {
+    await navigator.clipboard.writeText(cmd);
+  } catch {
+    // Clipboard API needs a secure context; fall back to a selection.
+    const ta = document.createElement("textarea");
+    ta.value = cmd;
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand("copy"); } catch {}
+    document.body.removeChild(ta);
+  }
+
+  btn.textContent = "Kopiert ✓";
+  btn.classList.add("ok");
+  setTimeout(() => { btn.textContent = alt; btn.classList.remove("ok"); }, 2000);
+}
+</script>
 
 </body>
 </html>
