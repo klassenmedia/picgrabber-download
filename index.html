@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PicGrabber – Material sichten und Bilder ziehen</title>
+<meta name="description" content="Rohmaterial sichten, die besten Stellen markieren und Bilder aus dem Video speichern. Läuft lokal auf dem Mac, ohne Upload.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap');
+
+  :root {
+    --bg: #0c0c0c;
+    --surface: #161616;
+    --border: #252525;
+    --accent: #e8ff47;
+    --text: #efefef;
+    --muted: #8a8a8a;
+    --saved: #47ff8a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Mono', monospace;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: 860px; margin: 0 auto; padding: 0 24px; }
+
+  h1, h2, h3 { font-family: 'Syne', sans-serif; letter-spacing: -1px; line-height: 1.15; }
+
+  /* ── Hero ── */
+  header { padding: 80px 0 60px; border-bottom: 1px solid var(--border); }
+
+  .logo {
+    font-family: 'Syne', sans-serif; font-weight: 800;
+    font-size: 1.1rem; color: var(--accent);
+    letter-spacing: -1px; margin-bottom: 48px;
+  }
+
+  h1 { font-size: clamp(2.2rem, 6vw, 3.6rem); font-weight: 800; margin-bottom: 20px; }
+  h1 .hl { color: var(--accent); }
+
+  .sub { font-size: 1rem; color: var(--muted); max-width: 560px; margin-bottom: 36px; }
+
+  .cta-row { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+
+  .btn {
+    font-family: 'Syne', sans-serif; font-weight: 700;
+    font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase;
+    background: var(--accent); color: #000;
+    border: none; padding: 15px 30px; border-radius: 2px;
+    cursor: pointer; text-decoration: none; display: inline-block;
+    transition: opacity 0.15s;
+  }
+  .btn:hover { opacity: 0.85; }
+
+  .meta { font-size: 0.72rem; color: var(--muted); }
+
+  /* ── Sections ── */
+  section { padding: 60px 0; border-bottom: 1px solid var(--border); }
+
+  h2 {
+    font-size: 0.7rem; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 3px;
+    margin-bottom: 32px;
+  }
+
+  /* ── Steps ── */
+  .step { display: flex; gap: 20px; margin-bottom: 30px; }
+  .step:last-child { margin-bottom: 0; }
+
+  .step-nr {
+    font-family: 'Syne', sans-serif; font-weight: 800;
+    font-size: 1.5rem; color: var(--accent);
+    flex-shrink: 0; width: 42px; line-height: 1.2;
+  }
+  .step h3 { font-size: 1.05rem; margin-bottom: 6px; }
+  .step p { font-size: 0.85rem; color: var(--muted); }
+
+  /* ── Features ── */
+  .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+
+  .feat {
+    background: var(--surface); border: 1px solid var(--border);
+    padding: 22px; border-radius: 3px;
+  }
+  .feat .ico { font-size: 1.4rem; margin-bottom: 12px; display: block; }
+  .feat h3 { font-size: 0.95rem; margin-bottom: 8px; }
+  .feat p { font-size: 0.8rem; color: var(--muted); }
+
+  /* ── Keys ── */
+  .keys { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px 24px; }
+  .key { display: flex; align-items: center; gap: 12px; font-size: 0.82rem; }
+  .key kbd {
+    background: var(--surface); border: 1px solid var(--border);
+    color: var(--accent); font-family: 'DM Mono', monospace;
+    font-size: 0.72rem; padding: 4px 9px; border-radius: 2px;
+    min-width: 38px; text-align: center; flex-shrink: 0;
+  }
+  .key span { color: var(--muted); }
+
+  /* ── Note ── */
+  .note {
+    background: var(--surface); border-left: 2px solid var(--accent);
+    padding: 18px 22px; border-radius: 2px; font-size: 0.85rem;
+  }
+  .note strong { color: var(--accent); font-weight: 500; }
+  .note + .note { margin-top: 12px; }
+
+  /* ── Download ── */
+  .dl { text-align: center; padding: 70px 0; }
+  .dl h2 { margin-bottom: 18px; }
+  .dl p { color: var(--muted); font-size: 0.85rem; margin-bottom: 28px; }
+
+  footer { padding: 40px 0 60px; font-size: 0.75rem; color: var(--muted); }
+  footer a { color: var(--muted); }
+
+  @media (max-width: 600px) {
+    header { padding: 50px 0 40px; }
+    section { padding: 44px 0; }
+    .step { gap: 14px; }
+    .step-nr { width: 32px; font-size: 1.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="logo">SHOT PICKER</div>
+    <h1>Dein Material sichten.<br><span class="hl">Ohne Aufwand.</span></h1>
+    <p class="sub">
+      Rohmaterial durchschauen, die besten Stellen markieren und schöne Bilder
+      direkt aus dem Video speichern. Alles läuft auf deinem eigenen Rechner –
+      es wird nichts hochgeladen.
+    </p>
+    <div class="cta-row">
+      <a class="btn" href="PicGrabber.zip" download>↓ Herunterladen</a>
+      <span class="meta">für macOS · ca. 20 KB</span>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <h2>So funktioniert es</h2>
+
+    <div class="step">
+      <div class="step-nr">1</div>
+      <div>
+        <h3>Herunterladen und öffnen</h3>
+        <p>Datei entpacken, Doppelklick auf <strong>PicGrabber_STARTEN.command</strong> – der Browser öffnet sich von allein. Beim ersten Mal wird einmalig Python installiert.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-nr">2</div>
+      <div>
+        <h3>Ordner angeben</h3>
+        <p>Den Ordner mit deinen Videos eintragen und auf „Laden" klicken. Alle Videos erscheinen links in der Liste.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-nr">3</div>
+      <div>
+        <h3>Sichten, markieren, Bilder ziehen</h3>
+        <p>Schöne Stellen mit <strong>I</strong> und <strong>O</strong> markieren, mit <strong>S</strong> speichern. Für ein Bild einfach <strong>Enter</strong> drücken.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-nr">4</div>
+      <div>
+        <h3>Fertig – Datei zurückschicken</h3>
+        <p>Am Ende auf „Sichtung abschließen". Du bekommst eine kleine Datei mit allen Markierungen und Kommentaren – die schickst du zurück.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Was du damit machen kannst</h2>
+    <div class="features">
+      <div class="feat">
+        <span class="ico">📷</span>
+        <h3>Bilder speichern</h3>
+        <p>Jedes Einzelbild aus dem Video in voller Qualität sichern. Du bestimmst selbst, in welchem Ordner die Bilder landen.</p>
+      </div>
+      <div class="feat">
+        <span class="ico">✂️</span>
+        <h3>Stellen markieren</h3>
+        <p>Anfang und Ende einer Szene setzen – die Auswahl erscheint als Sequenz in der Liste und lässt sich jederzeit nochmal ansehen.</p>
+      </div>
+      <div class="feat">
+        <span class="ico">💬</span>
+        <h3>Bewerten und kommentieren</h3>
+        <p>Jede Stelle mit Daumen hoch oder runter bewerten und einen Kommentar hinterlassen, damit klar ist, was dir gefällt.</p>
+      </div>
+      <div class="feat">
+        <span class="ico">🔒</span>
+        <h3>Bleibt bei dir</h3>
+        <p>Die Videos verlassen deinen Rechner nicht. Zurückgeschickt wird nur eine kleine Textdatei mit deinen Markierungen.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Tastenkürzel</h2>
+    <div class="keys">
+      <div class="key"><kbd>␣</kbd><span>Abspielen / Pause</span></div>
+      <div class="key"><kbd>← →</kbd><span>Einzelbild vor / zurück</span></div>
+      <div class="key"><kbd>↑ ↓</kbd><span>Video wechseln</span></div>
+      <div class="key"><kbd>Enter</kbd><span>Bild speichern</span></div>
+      <div class="key"><kbd>I</kbd><span>Anfang markieren</span></div>
+      <div class="key"><kbd>O</kbd><span>Ende markieren</span></div>
+      <div class="key"><kbd>S</kbd><span>Sequenz speichern</span></div>
+      <div class="key"><kbd>G</kbd><span>Daumen hoch</span></div>
+      <div class="key"><kbd>B</kbd><span>Daumen runter</span></div>
+      <div class="key"><kbd>K</kbd><span>Kommentar schreiben</span></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Gut zu wissen</h2>
+    <div class="note">
+      <strong>Falls macOS meckert.</strong> Kommt beim Doppelklick die Meldung
+      „kann nicht geöffnet werden": einmal mit Rechtsklick auf die Datei,
+      dann „Öffnen" wählen und im Dialog nochmal auf „Öffnen". Danach
+      funktioniert der normale Doppelklick.
+    </div>
+    <div class="note">
+      <strong>Das schwarze Fenster.</strong> Beim Start öffnet sich ein Fenster
+      mit Text. Das gehört dazu und muss geöffnet bleiben, solange du arbeitest.
+      Zum Beenden einfach schließen.
+    </div>
+    <div class="note">
+      <strong>Voraussetzung.</strong> Ein Mac. Alles Weitere installiert das
+      Programm beim ersten Start selbst – dabei wird einmal nach deinem
+      Mac-Passwort gefragt.
+    </div>
+  </div>
+</section>
+
+<div class="dl">
+  <div class="wrap">
+    <h2>Loslegen</h2>
+    <p>Herunterladen, entpacken, doppelklicken.</p>
+    <a class="btn" href="PicGrabber.zip" download>↓ PicGrabber herunterladen</a>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap">
+    Ein Werkzeug von <a href="https://klassen-media.de">KlassenMedia</a> · Andreas Klassen
+  </div>
+</footer>
+
+</body>
+</html>
